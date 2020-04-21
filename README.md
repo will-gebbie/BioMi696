@@ -1,2 +1,2 @@
-# BioMi696
-Programs from course: BioMi696
+# Bioinformatics and Medical Informatics
+Programs from course: Genetic and Epigenetic Analysis
