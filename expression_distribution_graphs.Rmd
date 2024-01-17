@@ -1,0 +1,46 @@
+```{r}
+library(tximport)
+dir <- list.files(path = "official_20z_quant_data/")
+```
+
+```{r}
+files <- file.path("official_20z_quant_data",dir)
+names(files) <- sub('.sf','',basename(files))
+names(files) <- c('CaBR1','CaBR2','CaBR3','CaBR4','CeBR1','CeBR2','CeBR3','CeBR4','LaBR1','LaBR2','LaBR3',
+                  'NdBR1','NdBR2','NdBR3','NdBR4','NdBR5','SmBR1','SmBR2','SmBR3','SmBR4','TraceBR1','TraceBR2')
+txi.salmon <- tximport(files, type = "salmon", txOut = TRUE)
+head(txi.salmon$counts)
+# write.csv(as.data.frame(txi.salmon$counts),
+#           file="raw_counts_with_ca.csv")
+```
+```{r}
+library(ggplot2)
+df <- as.data.frame(txi.salmon$counts)
+df
+df.ca <- df[, c('CaBR1','CaBR2','CaBR3','CaBR4')]
+df.ce <- df[, c('CeBR1','CeBR2','CeBR3','CeBR4')]
+df.la <- df[, c('LaBR1','LaBR2','LaBR3')]
+df.nd <- df[, c('NdBR1','NdBR2','NdBR3','NdBR4','NdBR5')]
+df.sm <- df[, c('SmBR1','SmBR2','SmBR3','SmBR4')]
+df.trace <- df[, c('TraceBR1','TraceBR2')]
+boxplot(log(df.ce+0.5))
+boxplot(log(df.la+0.5))
+boxplot(log(df.nd+0.5))
+boxplot(log(df.sm+0.5))
+boxplot(log(df.trace+0.5))
+boxplot(log(df.ca+0.5))
+```
+```{r}
+library(tidyr)
+plot_df.ce <- pivot_longer(log2(df.ce+0.5), cols = 1:4)
+plot_df.nd <- pivot_longer(log2(df.nd+0.5), cols = 1:5)
+plot_df.sm <- pivot_longer(log2(df.sm+0.5), cols = 1:4)
+plot_df.la <- pivot_longer(log2(df.la+0.5), cols = 1:3)
+plot_df.trace <- pivot_longer(log2(df.trace+0.5), cols = 1:2)
+plot_df.ca <- pivot_longer(log2(df.ca+0.5), cols= 1:4)
+
+ggplot(plot_df.nd, aes(name, value, fill=name)) + geom_violin()
+
+#ggsave('la_violin.png', plot = last_plot())
+```
+
